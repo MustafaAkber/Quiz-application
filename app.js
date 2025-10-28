@@ -1,3 +1,16 @@
+var firebaseConfig = {
+    apiKey: "AIzaSyBSoDx1PGabZOdThGK8FTZFQ72aSlAhDwI",
+    authDomain: "quiz-app-60f30.firebaseapp.com",
+    projectId: "quiz-app-60f30",
+    storageBucket: "quiz-app-60f30.firebasestorage.app",
+    messagingSenderId: "424131066415",
+    appId: "1:424131066415:web:1945d1951729c95f22e4da"
+};
+
+var app = firebase.initializeApp(firebaseConfig);
+console.log(app);
+console.log(firebase);
+
 var questions = [
     {
         question: "Q1: HTML Stands for?",
@@ -99,6 +112,8 @@ function timer() {
 setInterval(timer, 1000);
 
 function nextQuestion() {
+    
+    var q = questions[index - 1];
     var allInputs = document.getElementsByTagName("input");
 
     for (var i = 0; i < allInputs.length; i++) {
@@ -114,11 +129,13 @@ function nextQuestion() {
                 score++;
             }
             console.log(selectedOption);
+            saveQuestion(q, selectedOption);
         }
         nextBtn.disabled = true;
     }
 
     if (index > questions.length - 1) {
+        firebase.database().ref("score").push(score);
         if (score >= 8) {
             Swal.fire({
                 title: "Good job!",
@@ -149,7 +166,13 @@ function nextQuestion() {
     }
 }
 nextQuestion();
-
+function saveQuestion(q, ans) {
+    var questAns = {
+        quest: q.question,
+        ans: ans
+    }
+    firebase.database().ref("questions").push(questAns);
+}
 function trigger() {
     nextBtn.disabled = false;
 }
